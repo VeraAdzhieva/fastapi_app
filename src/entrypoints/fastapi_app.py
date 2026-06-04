@@ -4,19 +4,16 @@ from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 
+from src.application.commands import Predict
 from src.application.handlers import (
     PredictHandler,
-)
-
-from src.application.commands import (
-   Predict
 )
 
 app = FastAPI(title="ONNX Prediction")
 security = HTTPBasic()
 
 
-def verify_user(credentials: HTTPBasicCredentials = Depends(security)):
+def verify_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
     correct_username = secrets.compare_digest(credentials.username, "demo_user")
     correct_password = secrets.compare_digest(credentials.password, "demo_pass")
     if not (correct_username and correct_password):
@@ -26,6 +23,7 @@ def verify_user(credentials: HTTPBasicCredentials = Depends(security)):
             headers={"WWW-Authenticate": "Basic"},
         )
     return credentials.username
+
 
 class PredictDTO(BaseModel):
     pregnancies: int = Field(..., description="Кол-во беременностей")
@@ -54,7 +52,7 @@ def has_diabet(dto: PredictDTO, username: str = Depends(verify_user)) -> dict[st
             msg = "Есть вероятность диабета"
         else:
             msg = "Нет вероятности диабета"
-        
+
         return {"message": msg, "user": username}
     except Exception as e:
         return {"message": str(e)}
