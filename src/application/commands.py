@@ -1,11 +1,13 @@
 from dataclasses import dataclass
+import numpy as np
 
 @dataclass(frozen=True)
 class Predict:
-    Pregnancies: int
-    Glucose: int
-    BMI: float
-    Age: int
+    pregnancies: int
+    glucose: int
+    bmi: float
+    age: int
 
-    def to_features_array(self) -> list:
-        return [self.Pregnancies, self.Glucose, self.BMI, self.Age] 
+    def to_features_array(self) -> np.ndarray:
+        features = [self.pregnancies, self.glucose, self.bmi, self.age]
+        return np.array([features], dtype=np.float32)

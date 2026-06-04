@@ -1,4 +1,4 @@
-import onnxruntime as ort
+import onnxruntime as onnx
 import numpy as np
 from pathlib import Path
 
@@ -15,17 +15,14 @@ class OnnxPredict:
         Инициализация.
         """
         if not MODEL_PATH.exists():
-            raise FileNotFoundError(
-                f"Модель {MODEL_PATH} не найдена \n"
-            )
+            raise FileNotFoundError(f"Модель {MODEL_PATH} не найдена \n")
         
-        self.session = ort.InferenceSession(str(MODEL_PATH))
+        self.session = onnx.InferenceSession(str(MODEL_PATH))
         self.input_name = self.session.get_inputs()[0].name
 
-    def predict(self, features: list) -> float:
+    def predict(self, features: np.ndarray) -> float:
         """
-        Обращение к сервису.
+        Обращение к модели.
         """
-        data = np.array([features], dtype=np.float32)
-        result = self.session.run(None, {self.input_name: data})
+        result = self.session.run(None, {self.input_name: features})
         return float(result[0][0])

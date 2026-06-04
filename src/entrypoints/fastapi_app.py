@@ -28,10 +28,10 @@ def verify_user(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 class PredictDTO(BaseModel):
-    Pregnancies: int = Field(..., description="Кол-во беременностей")
-    Glucose: int = Field(..., description="Уровень глюкозы")
-    BMI: float = Field(..., description="Индекс массы тела")
-    Age: int = Field(..., description="Возраст")
+    pregnancies: int = Field(..., description="Кол-во беременностей")
+    glucose: int = Field(..., description="Уровень глюкозы")
+    bmi: float = Field(..., description="Индекс массы тела")
+    age: int = Field(..., description="Возраст")
 
 
 @app.get("/")
@@ -40,17 +40,21 @@ async def root() -> dict[str, str]:
 
 
 @app.get("/secure")
-def secure_area(username: str = Depends(verify_user)):
+def secure_area(username: str = Depends(verify_user)) -> dict[str, str]:
     return {"message": f"Welcome {username}, this is a protected route."}
 
 
 @app.post("/predict", summary="Узнать наличие диабета", tags=["Predict"])
-def has_diabet(dto: PredictDTO):
+def has_diabet(dto: PredictDTO, username: str = Depends(verify_user)) -> dict[str, str]:
     handler = PredictHandler()
     cmd = Predict(**dto.dict())
     try:
         result = handler(cmd)
+        if result:
+            msg = "Есть вероятность диабета"
+        else:
+            msg = "Нет вероятности диабета"
         
-        return {"message": f"Возможность диабета: {result}"}
-    except ValueError as e:
+        return {"message": msg, "user": username}
+    except Exception as e:
         return {"message": str(e)}
