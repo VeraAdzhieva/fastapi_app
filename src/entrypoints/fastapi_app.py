@@ -43,7 +43,9 @@ def secure_area(username: str = Depends(verify_user)) -> dict[str, str]:
 
 
 @app.post("/predict", summary="Узнать наличие диабета", tags=["Predict"])
-def has_diabet(dto: PredictDTO, username: str = Depends(verify_user)) -> dict[str, str | int]:
+def has_diabet(
+    dto: PredictDTO, username: str = Depends(verify_user)
+) -> dict[str, str | int]:
     handler = PredictHandler()
     cmd = Predict(**dto.dict())
     try:
