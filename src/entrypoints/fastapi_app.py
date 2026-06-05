@@ -43,16 +43,16 @@ def secure_area(username: str = Depends(verify_user)) -> dict[str, str]:
 
 
 @app.post("/predict", summary="Узнать наличие диабета", tags=["Predict"])
-def has_diabet(dto: PredictDTO, username: str = Depends(verify_user)) -> dict[str, str]:
+def has_diabet(dto: PredictDTO, username: str = Depends(verify_user)) -> dict[str, str | int]:
     handler = PredictHandler()
     cmd = Predict(**dto.dict())
     try:
         result = handler(cmd)
-        if result:
+        if result > 0.5:
             msg = "Есть вероятность диабета"
         else:
             msg = "Нет вероятности диабета"
 
-        return {"message": msg, "user": username}
+        return {"message": msg, "user": username, "prediction": result}
     except Exception as e:
         return {"message": str(e)}

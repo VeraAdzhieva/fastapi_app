@@ -5,11 +5,11 @@ predictor = OnnxPredict()
 
 
 class PredictHandler:
-    def __call__(self, cmd: Predict) -> bool:
+    def __call__(self, cmd: Predict) -> float:
         """
         Вероятность диабета.
         """
         features = cmd.to_features_array()
         result = predictor.predict(features)
 
-        return result > 0.5
+        return result
