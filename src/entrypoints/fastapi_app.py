@@ -1,10 +1,11 @@
 import secrets
 
 from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPBasicCredentials
+from fastapi.security import HTTPBasicCredentials, HTTPBearer
+
+from .admin import router as admin
 from .predict import router as predict
 from .users import router as users
-from .admin import router as admin
 
 app = FastAPI(title="ONNX Prediction")
 security = HTTPBearer()
@@ -21,9 +22,11 @@ def verify_user(credentials: HTTPBasicCredentials = Depends(security)) -> str:
         )
     return credentials.username
 
+
 @app.get("/")
 async def root() -> dict[str, str]:
     return {"message": "Hello from a unique FastAPI app!"}
+
 
 app.include_router(users)
 app.include_router(admin)

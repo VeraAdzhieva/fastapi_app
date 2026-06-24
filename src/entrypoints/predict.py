@@ -1,14 +1,14 @@
-
-from pydantic import BaseModel, Field
 from fastapi import APIRouter
+from pydantic import BaseModel, Field
+
 from src.application.commands import Predict
 from src.application.handlers import (
     PredictHandler,
 )
-
 from src.infrastructure.auth.dependencies import CurrentUser
 
 router = APIRouter(prefix="/predict", tags=["Predict"])
+
 
 class PredictDTO(BaseModel):
     pregnancies: int = Field(..., description="Кол-во беременностей")
@@ -19,7 +19,8 @@ class PredictDTO(BaseModel):
 
 @router.post("/predict", summary="Узнать наличие диабета", tags=["Predict"])
 def has_diabet(
-    dto: PredictDTO, user_info: CurrentUser,
+    dto: PredictDTO,
+    user_info: CurrentUser,
 ) -> dict[str, str | float]:
     handler = PredictHandler()
     cmd = Predict(**dto.dict())

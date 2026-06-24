@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from sqlalchemy.orm import Session, sessionmaker
 from types import TracebackType
 from typing import Optional, Type
+
+from sqlalchemy.orm import Session, sessionmaker
+
 from src.application.unit_of_work import UnitOfWork
 from src.infrastructure.database.repositories import (
     SqlAlchemyUsersRepository,
@@ -19,7 +21,7 @@ class SqlAlchemyUnitOfWork(UnitOfWork):
         self.session = self._session_factory()
         self.users = SqlAlchemyUsersRepository(self.session)
         return self
-    
+
     def __exit__(
         self,
         exc_type: Optional[Type[BaseException]],

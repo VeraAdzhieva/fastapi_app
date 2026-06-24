@@ -3,11 +3,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any, List, Optional, Union
-from .role import Role, Permission
+
+from .role import Permission, Role
 
 # =============================================================================
 # VALUE OBJECTS (VO)
 # =============================================================================
+
 
 @dataclass(frozen=True)
 class Username:
@@ -20,15 +22,16 @@ class Username:
             raise ValueError("Ошибка.Придумайте логин более 3 символов")
 
 
-
 # =============================================================================
 # ENTITY
 # =============================================================================
+
 
 class User:
     """
     Сущность пользователя.
     """
+
     def __init__(
         self,
         username: Username,
@@ -56,13 +59,14 @@ class User:
                 converted.append(Role(name=role, permissions=[]))
             else:
                 converted.append(role)
-    
+
         return converted
 
 
 # =============================================================================
 # AGGREGATE
 # =============================================================================
+
 
 class UserAggregate:
     def __init__(self, root: User) -> None:

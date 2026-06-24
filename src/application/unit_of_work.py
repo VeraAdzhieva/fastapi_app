@@ -1,6 +1,8 @@
 from __future__ import annotations
-from typing import Optional, Protocol, Type
+
 from types import TracebackType
+from typing import Optional, Protocol, Type
+
 from src.domain.repository import UsersRepository
 
 

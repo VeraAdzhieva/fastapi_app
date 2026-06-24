@@ -1,14 +1,18 @@
+import os
 from typing import Annotated
+
+import jwt
 from fastapi import Depends, HTTPException, status
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from src.infrastructure.auth.token_service import ALGORITHM
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 from src.infrastructure.auth.model import UserInfo
-import jwt, os
+from src.infrastructure.auth.token_service import ALGORITHM
 
 security = HTTPBearer()
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 ALGORITHM = "HS256"
+
 
 def _get_user_info_from_token(
     creds: Annotated[HTTPAuthorizationCredentials, Depends(security)],
@@ -26,7 +30,7 @@ def _get_user_info_from_token(
             lastname=user_payload["lastname"],
             roles=user_payload["roles"],
         )
-    
+
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -37,5 +41,6 @@ def _get_user_info_from_token(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail=f"Неверный токен {e}",
         )
+
 
 CurrentUser = Annotated[UserInfo, Depends(_get_user_info_from_token)]

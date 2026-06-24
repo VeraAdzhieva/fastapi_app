@@ -1,17 +1,17 @@
-from src.application.commands import Predict, Register, LoginIn
-from src.infrastructure.ml.onnx_service import OnnxPredict
-from src.application.unit_of_work import UnitOfWork
 from fastapi import HTTPException
-from src.domain.factory import UserFactory
 from pwdlib import PasswordHash
-from src.infrastructure.auth.token_service import TokenService
+
+from src.application.commands import LoginIn, Predict, Register
+from src.application.unit_of_work import UnitOfWork
+from src.domain.factory import UserFactory
+from src.domain.models.role import Action, Object
 from src.infrastructure.auth.model import UserInfo
-from src.domain.models.role import Object, Action
+from src.infrastructure.auth.token_service import TokenService
+from src.infrastructure.ml.onnx_service import OnnxPredict
 
 predictor = OnnxPredict()
 
 password_hash = PasswordHash.recommended()
-
 
 
 class PredictHandler:
@@ -29,15 +29,15 @@ class PredictHandler:
         result = predictor.predict(features)
 
         return result
-    
+
 
 class RegisterHandler:
     """
     Регистрация.
     """
+
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
-        
 
     def __call__(self, cmd: Register) -> None:
         """
@@ -51,8 +51,10 @@ class RegisterHandler:
                 status_code=400,
                 detail="Пользователь существует",
             )
-        
-        user_agg = UserFactory.create(cmd.username, cmd.password, cmd.firstname, cmd.lastname, roles=["user"])
+
+        user_agg = UserFactory.create(
+            cmd.username, cmd.password, cmd.firstname, cmd.lastname, roles=["user"]
+        )
         self.uow.users.add(user_agg)
         self.uow.commit()
 
@@ -61,6 +63,7 @@ class AuthHandler:
     """
     Аутентификация
     """
+
     def __init__(self, uow: UnitOfWork, token_service: TokenService):
         self.uow = uow
         self.token_service = token_service
@@ -74,7 +77,7 @@ class AuthHandler:
                 status_code=404,
                 detail="Пользователь не найден",
             )
-        
+
         user = user_model.root
 
         if not password_hash.verify(cmd.password, user.password):
@@ -82,7 +85,7 @@ class AuthHandler:
                 status_code=401,
                 detail="Unauthorized",
             )
-        
+
         return self.token_service.create_access_token(
             {
                 "username": user.username,

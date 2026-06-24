@@ -1,7 +1,8 @@
-
-from fastapi import APIRouter, HTTPException, Depends
-from src.domain.models.role import Subject, Object, Action
 from typing import Annotated
+
+from fastapi import APIRouter, Depends, HTTPException
+
+from src.domain.models.role import Action, Object, Subject
 from src.infrastructure.auth.dependencies import CurrentUser
 from src.infrastructure.auth.model import UserInfo
 
@@ -16,5 +17,6 @@ async def get_settings(user: CurrentUser) -> dict[str, str]:
             status_code=403,
             detail="Нет прав доступа",
         )
-    return {"message": "Время дейсвтия токена пользователя: 60мин, пользователь может узнать о вероятности наличия диабета."}
-   
+    return {
+        "message": "Время дейсвтия токена пользователя: 60мин, пользователь может узнать о вероятности наличия диабета."
+    }
