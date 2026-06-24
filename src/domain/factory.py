@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pwdlib import PasswordHash
 
-from .models.user import User, UserAggregate
+from .models.role import Role
+from .models.user import User, UserAggregate, Username
 
 password_hash = PasswordHash.recommended()
 
@@ -10,21 +11,21 @@ password_hash = PasswordHash.recommended()
 class UserFactory:
     @staticmethod
     def create(
-        username: str,
+        username: Username,
         password: str,
         firstname: str,
         lastname: str,
-        roles: list[str] = None,
+        roles: list[Role],
     ) -> UserAggregate:
         hash_password = password_hash.hash(password)
-        username_lower = username.lower()
+        username_lower = username.value.lower()
 
         if "admin" in username_lower:
-            roles = ["Admin", "User"]
+            roles = [Role(name="Admin"), Role(name="User")]
         elif "analyst" in username_lower or "analytics" in username_lower:
-            roles = ["Analyst", "User"]
+            roles = [Role(name="Analyst"), Role(name="User")]
         else:
-            roles = ["User"]
+            roles = [Role(name="User")]
 
         entity = User(
             username=username,

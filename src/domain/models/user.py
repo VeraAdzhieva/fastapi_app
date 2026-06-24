@@ -41,7 +41,7 @@ class User:
         user_id: Optional[int] = None,
         created_at: Optional[datetime] = None,
         last_login: Optional[datetime] = None,
-        roles: Optional[List[Union[str, Role]]] = None,
+        roles: Optional[List[Role]] = None,
     ) -> None:
         self.id = user_id
         self.username = username
@@ -52,7 +52,7 @@ class User:
         self.last_login = last_login
         self.roles = self._convert_roles(roles or [])
 
-    def _convert_roles(self, roles):
+    def _convert_roles(self, roles: list[Role]) -> list[Role]:
         converted = []
         for role in roles:
             if isinstance(role, str):

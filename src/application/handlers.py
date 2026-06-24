@@ -4,7 +4,8 @@ from pwdlib import PasswordHash
 from src.application.commands import LoginIn, Predict, Register
 from src.application.unit_of_work import UnitOfWork
 from src.domain.factory import UserFactory
-from src.domain.models.role import Action, Object
+from src.domain.models.role import Action, Object, Role
+from src.domain.models.user import Username
 from src.infrastructure.auth.model import UserInfo
 from src.infrastructure.auth.token_service import TokenService
 from src.infrastructure.ml.onnx_service import OnnxPredict
@@ -15,7 +16,7 @@ password_hash = PasswordHash.recommended()
 
 
 class PredictHandler:
-    def __call__(self, cmd: Predict, user) -> float:
+    def __call__(self, cmd: Predict, user: UserInfo) -> float:
         """
         Вероятность диабета.
         """
@@ -53,7 +54,11 @@ class RegisterHandler:
             )
 
         user_agg = UserFactory.create(
-            cmd.username, cmd.password, cmd.firstname, cmd.lastname, roles=["user"]
+            Username(cmd.username),
+            cmd.password,
+            cmd.firstname,
+            cmd.lastname,
+            roles=Role(name="user"),
         )
         self.uow.users.add(user_agg)
         self.uow.commit()
@@ -68,7 +73,7 @@ class AuthHandler:
         self.uow = uow
         self.token_service = token_service
 
-    def __call__(self, cmd: LoginIn) -> None:
+    def __call__(self, cmd: LoginIn) -> str:
         if self.uow and self.uow.users:
             user_model = self.uow.users.get(cmd.username)
 

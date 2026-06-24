@@ -53,7 +53,7 @@ def authenticate(login: LoginInDTO) -> dict[str, str]:
         try:
             token = handler(cmd)
             return {
-                "message": f"Пользователь {login.username} авторизован. Токен: {token}Время действия: {ACCESS_TOKEN}"
+                "message": f"Пользователь {login.username} авторизован. Токен: {token}. Время действия: {ACCESS_TOKEN}"
             }
         except Exception as e:
             return {"message": str(e)}
