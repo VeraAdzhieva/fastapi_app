@@ -1,8 +1,6 @@
-from typing import Annotated
+from fastapi import APIRouter, HTTPException
 
-from fastapi import APIRouter, Depends, HTTPException
-
-from src.domain.models.role import Action, Object, Subject
+from src.domain.models.role import Action, Object
 from src.infrastructure.auth.dependencies import CurrentUser
 from src.infrastructure.auth.model import UserInfo
 

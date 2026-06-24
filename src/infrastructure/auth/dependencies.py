@@ -6,7 +6,6 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
 from src.infrastructure.auth.model import UserInfo
-from src.infrastructure.auth.token_service import ALGORITHM
 
 security = HTTPBearer()
 
