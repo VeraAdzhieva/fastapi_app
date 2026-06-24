@@ -2,3 +2,4 @@
 .mypy_cache/
 .pre-commit-cache/
 __pycache__/
+.env
